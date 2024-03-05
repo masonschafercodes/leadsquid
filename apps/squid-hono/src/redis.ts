@@ -1,5 +1,7 @@
+import { config } from 'dotenv';
 import { Redis, RedisOptions } from 'ioredis';
 
+config();
 if (!process.env.REDIS_PASSWORD) {
   console.error('Please provide a REDIS_PASSWORD in the environment');
   process.exit(1);
