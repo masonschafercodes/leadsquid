@@ -38,11 +38,9 @@ app.get('/api/queue/:id', async (c) => {
 const worker = new Worker(
   'scrape-queue',
   async (job) => {
-    if (job.name === 'process-data') {
-      console.log('Processing data', job.data.keywords);
-    }
+    console.log('Processing data', job.data.keywords);
   },
-  { connection: redisConnection }
+  { connection: redisConnection, limiter: { max: 5, duration: 10000 } }
 );
 
 worker.on('error', (err) => {
