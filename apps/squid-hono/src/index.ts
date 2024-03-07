@@ -17,7 +17,7 @@ const queue = new Queue('scrape-queue', {
 app.post('/api/queue', async (c) => {
   const { keywords } = await c.req.json<{ keywords: string[] }>();
 
-  if (!keywords || !Array.isArray(keywords)) {
+  if (!keywords || !Array.isArray(keywords) || keywords.length === 0) {
     return c.json({ status: 'error', message: 'Invalid keywords' });
   }
 
