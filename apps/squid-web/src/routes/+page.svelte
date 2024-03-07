@@ -5,6 +5,12 @@
 
   let keywordInput = '';
   let errorMessage = '';
+  let keywordInputRef: HTMLInputElement;
+
+  const handleAddKeyword = () => {
+    addKeyword(keywordInput);
+    keywordInput = '';
+  };
 
   const sendKeywords = async () => {
     const response = await fetch('http://localhost:3000/api/queue', {
@@ -19,6 +25,8 @@
     const data = await response.json();
     if (data.status === 'ok') {
       errorMessage = '';
+      keywords.set([]);
+      keywordInputRef.blur();
       return addJob(data.job_id, 'pending');
     }
 
@@ -41,15 +49,16 @@
   });
 </script>
 
-<main class="flex h-full w-full flex-col items-center justify-center gap-6 bg-neutral-900">
+<main class="flex h-full w-full flex-col items-center justify-center gap-6 bg-neutral-900 antialiased">
   <h1 class="text-4xl font-semibold text-neutral-100">LeadSquid</h1>
-  <form on:submit|preventDefault={() => addKeyword(keywordInput)} class="flex w-full max-w-sm flex-col gap-2">
+  <form on:submit|preventDefault={handleAddKeyword} class="flex w-full max-w-sm flex-col gap-2">
     <div class="flex flex-col gap-1">
-      <label for="new-keyword" class="font-medium text-neutral-100">New Keyword</label>
+      <label for="new-keyword" class="font-semibold text-neutral-100">New Keyword</label>
       <input
         type="text"
         id="new-keyword"
         name="new-keyword"
+        bind:this={keywordInputRef}
         bind:value={keywordInput}
         class="rounded-md border border-neutral-700 bg-neutral-800 p-2 text-neutral-100 shadow-md"
       />
