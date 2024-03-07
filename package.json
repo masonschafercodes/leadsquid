@@ -7,13 +7,14 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "api": "pnpm --filter squid-hono"
+    "api": "pnpm --filter squid-hono",
+    "web": "pnpm --filter squid-web"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "engines": {
-    "node": ">=21.1.0"
+    "node": ">=20.11.1"
   },
   "type": "module",
   "devDependencies": {
