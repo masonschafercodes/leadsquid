@@ -18,7 +18,7 @@ export const checkJobStatus = async (jobId: number) => {
   }
 
   console.log('[LOG] Checking Job Status for: ', jobId);
-  const response = await fetch(`http://localhost:3000/api/queue/${job.jobId}`);
+  const response = await fetch(`http://localhost:3001/api/queue/${job.jobId}`);
 
   const data = await response.json();
 

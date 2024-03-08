@@ -2,6 +2,16 @@
   import { onMount } from 'svelte';
   import { addKeyword, keywords, removeKeyword } from '../stores/keywords';
   import { addJob, checkJobStatus, jobs } from '../stores/jobs';
+  import Sun from 'svelte-radix/Sun.svelte';
+  import Moon from 'svelte-radix/Moon.svelte';
+  import Button from '@/components/ui/button/button.svelte';
+  import { toggleMode } from 'mode-watcher';
+  import * as Dialog from '$lib/components/ui/dialog';
+  import * as Card from '$lib/components/ui/card';
+  import { buttonVariants } from '@/components/ui/button';
+  import { Label } from '@/components/ui/label';
+  import { Input } from '@/components/ui/input';
+  import { currentYScroll } from '../stores/yScroll';
 
   let keywordInput = '';
   let errorMessage = '';
@@ -13,7 +23,7 @@
   };
 
   const sendKeywords = async () => {
-    const response = await fetch('http://localhost:3000/api/queue', {
+    const response = await fetch('http://localhost:3001/api/queue', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -47,56 +57,116 @@
 
     return () => clearInterval(interval);
   });
+
+  $: console.log($currentYScroll);
 </script>
 
-<main class="flex h-full w-full flex-col items-center justify-center gap-6 bg-neutral-900 antialiased">
-  <h1 class="text-4xl font-semibold text-neutral-100">LeadSquid</h1>
-  <form on:submit|preventDefault={handleAddKeyword} class="flex w-full max-w-sm flex-col gap-2">
-    <div class="flex flex-col gap-1">
-      <label for="new-keyword" class="font-semibold text-neutral-100">New Keyword</label>
-      <input
-        type="text"
-        id="new-keyword"
-        name="new-keyword"
-        bind:this={keywordInputRef}
-        bind:value={keywordInput}
-        class="rounded-md border border-neutral-700 bg-neutral-800 p-2 text-neutral-100 shadow-md"
-      />
-    </div>
-    <button
-      type="submit"
-      class="rounded-md border border-neutral-700 bg-neutral-800 p-2 text-neutral-100 shadow-md transition-all hover:bg-neutral-800/90"
-      >Add</button
-    >
-    <div class="grid grid-cols-3 gap-2">
-      {#each $keywords as keyword}
-        <button
-          type="button"
-          on:click={() => removeKeyword(keyword)}
-          class="w-full overflow-hidden rounded-sm bg-green-300/90 px-1 py-0.5 text-center text-sm font-semibold text-green-800 shadow-sm hover:bg-red-300/90 hover:text-red-800"
-        >
-          {keyword}
-        </button>
-      {/each}
-    </div>
-  </form>
-
-  <div class="flex w-full max-w-sm flex-col gap-2">
-    <button
-      on:click={sendKeywords}
-      class=" rounded-md border border-neutral-700 bg-neutral-800 p-2 text-neutral-100 shadow-md transition-all hover:bg-neutral-800/90"
-      >Send list to Server</button
-    >
-    {#if errorMessage !== ''}
-      <p class="w-full rounded-md border border-red-800 bg-red-300/90 p-2 text-red-800 shadow-md">{errorMessage}</p>
-    {/if}
-  </div>
-
-  <div
-    class="flex h-[25%] w-full max-w-sm flex-col gap-1 overflow-y-auto rounded-md border border-neutral-700 bg-neutral-800 p-2 shadow-md"
+<main
+  class="font-geist flex h-full w-full flex-col items-center justify-start overflow-x-hidden"
+  on:scroll={(e) => currentYScroll.set(e.currentTarget.scrollTop)}
+>
+  <header
+    class="fixed z-10 flex w-full items-center justify-center p-4 {$currentYScroll > 0 &&
+      'border-b border-slate-300 bg-slate-300/10 backdrop-blur-lg dark:border-slate-900 dark:bg-slate-900/10'}"
   >
-    {#each $jobs as job}
-      <p class="text-sm font-medium text-neutral-100">{job.jobId} - {job.status}</p>
-    {/each}
+    <div class="flex w-full max-w-6xl items-center justify-between">
+      <h1 class="text-xl font-bold">LeadSquid</h1>
+      <div class="flex items-center justify-center gap-2">
+        <Dialog.Root>
+          <Dialog.Trigger class={buttonVariants({ variant: 'outline' })}>Create New Search</Dialog.Trigger>
+          <Dialog.Content class="sm:max-w-[425px]">
+            <Dialog.Header>
+              <Dialog.Title>Create an new Search</Dialog.Title>
+              <Dialog.Description>
+                Create a new lead search from keywords. You can add multiple keywords at once.
+              </Dialog.Description>
+            </Dialog.Header>
+            <div class="flex flex-col gap-2">
+              <Label for="name">Name</Label>
+              <Input id="name" value="Pedro Duarte" class="col-span-3" />
+            </div>
+          </Dialog.Content>
+        </Dialog.Root>
+        <Button on:click={toggleMode} variant="outline" size="icon">
+          <Sun class="h-[1rem] w-[1rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+          <Moon class="absolute h-[1rem] w-[1rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          <span class="sr-only">Toggle theme</span>
+        </Button>
+      </div>
+    </div>
+  </header>
+  <div class="mt-24 flex w-full max-w-6xl flex-col gap-6">
+    <Card.Root>
+      <Card.Header>
+        <Card.Title>Developer, SAAS, Backend Dev, CEO</Card.Title>
+        <Card.Description>This data will be ready soon!</Card.Description>
+      </Card.Header>
+      <Card.Footer class="flex justify-end">
+        <Button variant="outline">View Data</Button>
+      </Card.Footer>
+    </Card.Root>
+    <Card.Root>
+      <Card.Header>
+        <Card.Title>Developer, SAAS, Backend Dev, CEO</Card.Title>
+        <Card.Description>This data will be ready soon!</Card.Description>
+      </Card.Header>
+      <Card.Footer class="flex justify-end">
+        <Button variant="outline">View Data</Button>
+      </Card.Footer>
+    </Card.Root>
+    <Card.Root>
+      <Card.Header>
+        <Card.Title>Developer, SAAS, Backend Dev, CEO</Card.Title>
+        <Card.Description>This data will be ready soon!</Card.Description>
+      </Card.Header>
+      <Card.Footer class="flex justify-end">
+        <Button variant="outline">View Data</Button>
+      </Card.Footer>
+    </Card.Root>
+    <Card.Root>
+      <Card.Header>
+        <Card.Title>Developer, SAAS, Backend Dev, CEO</Card.Title>
+        <Card.Description>This data will be ready soon!</Card.Description>
+      </Card.Header>
+      <Card.Footer class="flex justify-end">
+        <Button variant="outline">View Data</Button>
+      </Card.Footer>
+    </Card.Root>
+    <Card.Root>
+      <Card.Header>
+        <Card.Title>Developer, SAAS, Backend Dev, CEO</Card.Title>
+        <Card.Description>This data will be ready soon!</Card.Description>
+      </Card.Header>
+      <Card.Footer class="flex justify-end">
+        <Button variant="outline">View Data</Button>
+      </Card.Footer>
+    </Card.Root>
+    <Card.Root>
+      <Card.Header>
+        <Card.Title>Developer, SAAS, Backend Dev, CEO</Card.Title>
+        <Card.Description>This data will be ready soon!</Card.Description>
+      </Card.Header>
+      <Card.Footer class="flex justify-end">
+        <Button variant="outline">View Data</Button>
+      </Card.Footer>
+    </Card.Root>
+    <Card.Root>
+      <Card.Header>
+        <Card.Title>Developer, SAAS, Backend Dev, CEO</Card.Title>
+        <Card.Description>This data will be ready soon!</Card.Description>
+      </Card.Header>
+      <Card.Footer class="flex justify-end">
+        <Button variant="outline">View Data</Button>
+      </Card.Footer>
+    </Card.Root>
+    <Card.Root>
+      <Card.Header>
+        <Card.Title>Developer, SAAS, Backend Dev, CEO</Card.Title>
+        <Card.Description>This data will be ready soon!</Card.Description>
+      </Card.Header>
+      <Card.Footer class="flex justify-end">
+        <Button variant="outline">View Data</Button>
+      </Card.Footer>
+    </Card.Root>
   </div>
 </main>
